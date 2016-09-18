@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Wormday.MomoMath.Biz;
 
 namespace Wormday.MomoMath.WinApp
 {
@@ -15,6 +16,12 @@ namespace Wormday.MomoMath.WinApp
         public MainForm()
         {
             InitializeComponent();
+        }
+
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            QuestionSetter q = new QuestionSetter();
+            var items=q.Create(100);
         }
     }
 }
