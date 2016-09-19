@@ -21,7 +21,11 @@ namespace Wormday.MomoMath.WinApp
         private void MainForm_Load(object sender, EventArgs e)
         {
             QuestionSetter q = new QuestionSetter();
-            var items=q.Create(100);
+            var items = q.Create(100);
+            foreach (var item in items)
+            {
+                textBox1.AppendText(string.Format("{0}{1}",item.Problem,item.ExpectedAnswer) + System.Environment.NewLine);
+            }
         }
     }
 }

@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Wormday.MomoMath.Biz
 {
@@ -13,7 +10,7 @@ namespace Wormday.MomoMath.Biz
 
     public class NumberRange
     {
-        public NumberRange(int max=100, int min = 0)
+        public NumberRange(int max = 100, int min = 0)
         {
             this.Max = max;
             this.Min = min;
@@ -24,8 +21,8 @@ namespace Wormday.MomoMath.Biz
 
         public NumberRange Intersection(NumberRange other)
         {
-            int max=Math.Min(this.Max, other.Max);
-            int min=Math.Max(this.Min, other.Min);
+            int max = Math.Min(this.Max, other.Max);
+            int min = Math.Max(this.Min, other.Min);
             return new NumberRange(max, min);
         }
     }
@@ -37,19 +34,25 @@ namespace Wormday.MomoMath.Biz
             BaseQuestionSetter b = new SimpleAdditionQuestionSetter()
             {
                 AddendRange = new NumberRange() { Max = 100, Min = 1 },
-                SumRange = new NumberRange() { Max = 10, Min=10 },
+                SumRange = new NumberRange() { Max = 20, Min = 1 },
             };
+
             IList<MathProblem> result = new List<MathProblem>();
             for (int i = 0; i < quantity; i++)
             {
                 result.Add(b.CreateMathProblem());
             }
+
             return result;
         }
     }
 
     public abstract class BaseQuestionSetter
     {
+        /// <summary>
+        /// 创建题目
+        /// </summary>
+        /// <returns></returns>
         public abstract MathProblem CreateMathProblem();
     }
 
@@ -70,15 +73,20 @@ namespace Wormday.MomoMath.Biz
         /// <summary>可以凑整</summary>
         public bool CanMakeUpRound { get; set; }
 
+        /// <summary>
+        /// 创建题目
+        /// </summary>
+        /// <returns></returns>
         public override MathProblem CreateMathProblem()
         {
-            NumberRange sRange = SumRange.Intersection(new NumberRange(this.AddendRange.Max * 2, this.AddendRange.Min * 2));
-            if (sRange.Max < sRange.Min)
+            NumberRange finalSumRange = SumRange.Intersection(new NumberRange(this.AddendRange.Max * 2, this.AddendRange.Min * 2));
+            if (finalSumRange.Max < finalSumRange.Min)
             {
                 throw new ArgumentException();
             }
-            int addend1 = RandomCreator.GetRandomNumber(this.AddendRange);
-            int expected = RandomCreator.GetRandomNumber(sRange);
+            NumberRange finalAddendRange = new NumberRange((int)Math.Ceiling(finalSumRange.Max / 2.0), (int)Math.Floor(finalSumRange.Min / 2.0));
+            int addend1 = RandomCreator.GetRandomNumber(new NumberRange((int)Math.Ceiling(finalSumRange.Max / 2.0), (int)Math.Floor(finalSumRange.Min / 2.0)));
+            int expected = RandomCreator.GetRandomNumber(new NumberRange(finalAddendRange.Max + addend1 + 1, finalAddendRange.Min + addend1));
             int addend2 = expected - addend1;
             return new MathProblem() { Problem = string.Format("{0} + {1} = ", addend1, addend2), ExpectedAnswer = expected };
         }
