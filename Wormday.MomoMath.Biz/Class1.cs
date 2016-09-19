@@ -21,6 +21,13 @@ namespace Wormday.MomoMath.Biz
 
         public int Max { get; set; }
         public int Min { get; set; }
+
+        public NumberRange Intersection(NumberRange other)
+        {
+            int max=Math.Min(this.Max, other.Max);
+            int min=Math.Max(this.Min, other.Min);
+            return new NumberRange(max, min);
+        }
     }
 
     public class QuestionSetter
@@ -29,8 +36,8 @@ namespace Wormday.MomoMath.Biz
         {
             BaseQuestionSetter b = new SimpleAdditionQuestionSetter()
             {
-                AddendRange = new NumberRange() { Max = 10, Min = 1 },
-                SumRange = new NumberRange() { Max = 100, Min=1 },
+                AddendRange = new NumberRange() { Max = 100, Min = 1 },
+                SumRange = new NumberRange() { Max = 10, Min=10 },
             };
             IList<MathProblem> result = new List<MathProblem>();
             for (int i = 0; i < quantity; i++)
@@ -65,20 +72,15 @@ namespace Wormday.MomoMath.Biz
 
         public override MathProblem CreateMathProblem()
         {
-            if (this.SumRange.Max < this.AddendRange.Max)
+            NumberRange sRange = SumRange.Intersection(new NumberRange(this.AddendRange.Max * 2, this.AddendRange.Min * 2));
+            if (sRange.Max < sRange.Min)
             {
-                this.AddendRange = new NumberRange(this.SumRange.Max, this.AddendRange.Min);
+                throw new ArgumentException();
             }
-
-            NumberRange addend2Range = new NumberRange()
-            {
-                Min = this.AddendRange.Min,
-                Max = this.SumRange.Max - this.AddendRange.Max,
-            };
-
             int addend1 = RandomCreator.GetRandomNumber(this.AddendRange);
-            int addend2 = RandomCreator.GetRandomNumber(addend2Range);
-            return new MathProblem() { Problem = string.Format("{0} + {1} = ", addend1, addend2), Except = addend1 + addend2 };
+            int expected = RandomCreator.GetRandomNumber(sRange);
+            int addend2 = expected - addend1;
+            return new MathProblem() { Problem = string.Format("{0} + {1} = ", addend1, addend2), ExpectedAnswer = expected };
         }
     }
 
@@ -107,10 +109,16 @@ namespace Wormday.MomoMath.Biz
 
     }
 
+    /// <summary>数学问题</summary>
     public class MathProblem
     {
-        public decimal? Act { get; set; }
-        public decimal Except { get; set; }
+        /// <summary>实际的答案</summary>
+        public decimal? ActualAnswer { get; set; }
+
+        /// <summary>预期的答案</summary>
+        public decimal ExpectedAnswer { get; set; }
+
+        /// <summary>问题</summary>
         public string Problem { get; set; }
     }
 }
