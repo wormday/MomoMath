@@ -20,7 +20,7 @@ namespace Wormday.MomoMath.WinApp
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            QuestionSetter q = new QuestionSetter();
+            QuestionFactory q = new QuestionFactory();
             var items = q.Create(100);
             foreach (var item in items)
             {
