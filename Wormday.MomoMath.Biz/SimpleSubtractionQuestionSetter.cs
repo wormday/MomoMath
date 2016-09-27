@@ -23,6 +23,11 @@ namespace Wormday.MomoMath.Biz
         /// <returns></returns>
         public override MathProblem CreateMathProblem()
         {
+            NumberRange finalDifferenceRange = new NumberRange(max: this.MinuendRange.Max - this.SubtrahendRange.Min, min: this.MinuendRange.Min - this.SubtrahendRange.Max);
+            if (!finalDifferenceRange.IsValid)
+            {
+                throw new ArgumentException();
+            }
             return null;
         }
     }

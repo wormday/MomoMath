@@ -27,7 +27,7 @@ namespace Wormday.MomoMath.Biz
         public override MathProblem CreateMathProblem()
         {
             NumberRange finalSumRange = SumRange.Intersection(new NumberRange(this.AddendRange.Max * 2, this.AddendRange.Min * 2));
-            if (finalSumRange.Max < finalSumRange.Min)
+            if (!finalSumRange.IsValid)
             {
                 throw new ArgumentException();
             }
